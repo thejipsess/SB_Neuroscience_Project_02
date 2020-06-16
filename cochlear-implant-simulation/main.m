@@ -17,6 +17,9 @@ y = vocoder(x, FS, 4, 50, 'NOISE', 1);
 y2 = vocoder(x, FS, 4, 4100, 'NOISE', 1);
 y3 = vocoder(x, FS, 9, 4100, 'NOISE', 1);
 
+% play sound
+sound(y2, FS)
+
 % Plot the new audio signal
 figure;
 plot((1:length(y))/FS, y);
