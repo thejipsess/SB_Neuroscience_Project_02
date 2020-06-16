@@ -31,4 +31,4 @@ title('Vocoded signal')
 y2 = normalize(y, 'range', [-1 1]);
 
 % Export the converted audio file
-audiowrite(['Audio/out/',filename,'.flac'], y2, FS);
+audiowrite(['Audio/out/',filename,'.wav'], y2, FS);
