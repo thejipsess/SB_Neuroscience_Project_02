@@ -10,7 +10,8 @@ for i=1:numfiles
 
 
     % Set settings
-      FS = 16e3;
+    FS = 16e3;
+    counter = i
     % filetype = '.mp3';
     % filename = 'beethoven_fur_elise_orig';
     
