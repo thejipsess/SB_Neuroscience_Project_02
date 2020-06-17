@@ -16,8 +16,8 @@ for i=1:numfiles
     
     % getting file name withouth extentsion
     file = directory(i,1);
-    file = file.name
-    [filepath,name,ext] = fileparts(file)
+    file = file.name;
+    [filepath,name,ext] = fileparts(file);
 
     % Load  the audio file
     [x,fs] = audioread(['Audio/in/',name,ext]);
@@ -26,7 +26,7 @@ for i=1:numfiles
     x = resample(x, FS, fs);
 
     % Convert audio to the cochlear implant signal
-        y = vocoder(x, FS, 22, 50, 'NOISE', 1);
+    y = vocoder(x, FS, 22, 50, 'NOISE', 1);
 
 
     % play sound commented out
@@ -35,8 +35,8 @@ for i=1:numfiles
     % Plot the new audio signal
     figure;
     plot((1:length(y))/FS, y);
-    xlabel('Time (second)')
-    title('Vocoded signal')
+    xlabel('Time (second)');
+    title('Vocoded signal');
 
     % Normalise the sound signal between -1 and 1 since the audiowriter cannot
     % handle values outside this range.
