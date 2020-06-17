@@ -14,9 +14,11 @@ filename = 'sail';
 x = resample(x, FS, fs);
 
 % Convert audio to the cochlear implant signal
-y = vocoder(x, FS, 4, 50, 'NOISE', 1);
-y2 = vocoder(x, FS, 4, 4100, 'NOISE', 1);
-y = vocoder(x, FS, 22, '22-electrodes', 160, 'NOISE', 1);
+y4 = vocoder(x, FS, 4, 'default', 240, 'NOISE', 1);
+y8 = vocoder(x, FS, 8, 'default', 240, 'NOISE', 1);
+y10 = vocoder(x, FS, 10, '10-electrodes', 240, 'NOISE', 1);
+y16 = vocoder(x, FS, 16, '16-electrodes', 240, 'NOISE', 1);
+y22 = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 1);
 
 % Plot the new audio signal
 figure;
