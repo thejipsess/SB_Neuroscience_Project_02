@@ -9,7 +9,7 @@ if strcmp(Userinput,'n')
     % setting audio in map
     directory = dir('Audio/in/*.mp3');
     numfiles = length (directory);
-
+    
 
     for i=1:numfiles
 
@@ -61,6 +61,8 @@ elseif strcmp(Userinput,'y')
 
     % settings for the for loop
     numfiles = length (labels);
+    stim_CI = zeros(length(labels),fs);
+    
     
     for i=1:numfiles
         %selecting sounds
@@ -82,13 +84,18 @@ elseif strcmp(Userinput,'y')
         
         % writing out the audio
         
-        name= labels{i};
-        chr = mat2str(i);
-        audiowrite(['Audio/matout/',name,chr,'.wav'], y2, fs)
+        % name= labels{i};
+        % chr = mat2str(i);
+        % audiowrite(['Audio/matout/',name,chr,'.wav'], y2, fs)
+        
+        stim_CI(i,:) = y2;
         
         %counter
         count = i
     end
+    
+    save('Stim_CI','fs','stim_CI','labels')
+    
 else 
     print(error)    
 end
