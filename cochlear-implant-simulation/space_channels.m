@@ -16,80 +16,38 @@ switch channel_spacing
         bandwidth = logspace(log10(357), log10(4740), n_channels)
         
     case '22-electrodes'
-        % Create the cut-off frequencies for the bandpass filters
-        Wn = [
-        188, 313;
-        313, 438;
-        438, 563;
-        563, 688;
-        688, 813;
-        813, 938;
-        938, 1063;
-        1063, 1188;
-        1188, 1313;
-        1313, 1568;
-        1568, 1813;
-        1813, 2063;
-        2063, 2313;
-        2313, 2588;
-        2588, 3063;
-        3063, 3563;
-        3563, 4063;
-        4063, 4688;
-        4688, 5313;
-        5313, 6063;
-        6063, 6939;
-        6939, 7938;
-        ];
+        % Create a list of all cutoff frequencies for the bandpass filters
+        cf = [[188;313;438;563;688;813;938;1063;1188;1313;1568;1813;
+            2063;2313;2588;3063;3563;4063;4688;5313;6063;6939]];
+        
+        % Create a frequency range for all channels
+        Wn = [cf(1:end-1), cf(2:end)];
         
         % Normalise the cutoff frequencies  between 0 and 1, where 1 
         % corresponds to the Nyquist Fs—half the sample Fs
         Wn = Wn/(Fs/2);
         
     case '16-electrodes'
-        % Create the cut-off frequencies for the bandpass filters
-        Wn = [
-        188, 313;
-        313, 438;
-        438, 563;
-        563, 813;
-        813, 1063;
-        1063, 1313;
-        1313, 1568;
-        1568, 1813;
-        1813, 2188;
-        2188, 2688;
-        2688, 3188;
-        3188, 3813;
-        3813, 4563;
-        4563, 5438;
-        5438, 6563;
-        6563, 7938;
-        ];
+        % Create a list of all cutoff frequencies for the bandpass filters
+        cf = [188;313;438;563;813;1063;1313;1568;1813;2188;2688;3188;3813;4563;5438;6563];
+        
+        % Create a frequency range for all channels
+        Wn = [cf(1:end-1), cf(2:end)];
         
         % Normalise the cutoff frequencies  between 0 and 1, where 1 
         % corresponds to the Nyquist Fs—half the sample Fs
         Wn = Wn/(Fs/2);
         
     case '10-electrodes'
-        % Create the cut-off frequencies for the bandpass filters
-        Wn = [
-        188, 438;
-        438, 688;
-        688, 1063;
-        1063, 1438;
-        1438, 1938;
-        1938, 2563;
-        2563, 3438;
-        3438, 4563;
-        4563, 6063;
-        6063, 7938;
-        ];
+        % Create a list of all cutoff frequencies for the bandpass filters
+        cf = [188;438;688;1063;1438;1938;2563;3438;4563;6063;7938];
         
+        % Create a frequency range for all channels
+        Wn = [cf(1:end-1), cf(2:end)];
+
         % Normalise the cutoff frequencies  between 0 and 1, where 1 
         % corresponds to the Nyquist Fs—half the sample Fs
         Wn = Wn/(Fs/2);
-       
         
     case 'default'
         if     n_channels==1

@@ -18,7 +18,7 @@ y4 = vocoder(x, FS, 4, 'default', 240, 'NOISE', 1);
 y8 = vocoder(x, FS, 8, 'default', 240, 'NOISE', 1);
 y10 = vocoder(x, FS, 10, '10-electrodes', 240, 'NOISE', 1);
 y16 = vocoder(x, FS, 16, '16-electrodes', 240, 'NOISE', 1);
-y22 = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 1);
+y = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 1);
 
 % Plot the new audio signal
 figure;
@@ -33,4 +33,4 @@ title('Vocoded signal')
 y2 = normalize(y, 'range', [-1 1]);
 
 % Export the converted audio file
-audiowrite(['Audio/out/',filename,'.wav'], y2, FS);
+%audiowrite(['Audio/out/',filename,'.wav'], y2, FS);
