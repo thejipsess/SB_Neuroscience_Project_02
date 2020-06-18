@@ -1,6 +1,4 @@
-function [Wn] = space_channels(n_channels, Fs, channel_spacing)
-
-
+function Wn = space_channels(n_channels, Fs, channel_spacing)
 
 switch channel_spacing
     case 'linear'
@@ -12,13 +10,13 @@ switch channel_spacing
         % GeneFs logarithmically spaced center frequencies
         center_freqs = transpose(repmat(logspace(log10(357), log10(4740), n_channels), 2, 1));
         center_freqs = center_freqs/(Fs/2);
-        
+
         bandwidth = logspace(log10(357), log10(4740), n_channels)
-        
+
     case '22-electrodes'
         % Create a list of all cutoff frequencies for the bandpass filters
         cf = [[188;313;438;563;688;813;938;1063;1188;1313;1568;1813;
-            2063;2313;2588;3063;3563;4063;4688;5313;6063;6939]];
+            2063;2313;2588;3063;3563;4063;4688;5313;6063;6939;7938]];
         
         % Create a frequency range for all channels
         Wn = [cf(1:end-1), cf(2:end)];
@@ -29,7 +27,7 @@ switch channel_spacing
         
     case '16-electrodes'
         % Create a list of all cutoff frequencies for the bandpass filters
-        cf = [188;313;438;563;813;1063;1313;1568;1813;2188;2688;3188;3813;4563;5438;6563];
+        cf = [188;313;438;563;813;1063;1313;1568;1813;2188;2688;3188;3813;4563;5438;6563;7938];
         
         % Create a frequency range for all channels
         Wn = [cf(1:end-1), cf(2:end)];
@@ -50,6 +48,7 @@ switch channel_spacing
         Wn = Wn/(Fs/2);
         
     case 'default'
+        % Set according bandpass frequency ranges
         if     n_channels==1
             Wn = repmat([4000], 1, 2);
             Bw=0.5*[-7500 7500]./(Fs/2);
