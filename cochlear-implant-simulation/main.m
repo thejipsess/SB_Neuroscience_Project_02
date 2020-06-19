@@ -97,5 +97,5 @@ elseif strcmp(Userinput,'y')
     save('Stim_CI','fs','stim_CI','labels')
     
 else 
-    print(error)    
+    disp("error wrong input")    
 end
