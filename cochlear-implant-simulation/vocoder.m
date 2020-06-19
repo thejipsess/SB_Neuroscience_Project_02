@@ -1,4 +1,4 @@
-function [vocoded_x, cf_rand] = vocoder(x, Fs, n_channels, channel_spacing, cutoff , vocoder_type, verbose, optimise, iterations)
+function [vocoded_x, cf_rand] = vocoder(x, Fs, n_channels, channel_spacing, cutoff, vocoder_type, verbose, optimise, iterations)
 % Implementation of cochlear implant simulation, referred to as vocoder.
 % The first argument is the signal.
 % The second argument is the sampling Fs (preferred 16Khz)
@@ -175,7 +175,10 @@ for iter = 1:iterations
 
         % sum bands with equal gain in each channel
         vocoded_x = vocoded_x + fn;
+        
     end
+    vocoded_x(:, iter) = vocoded_x;
+    index = index + 2;
 end
     % Scale output waveform to have same rms as original
     vocoded_x = vocoded_x * (rms(x)/rms(vocoded_x));
