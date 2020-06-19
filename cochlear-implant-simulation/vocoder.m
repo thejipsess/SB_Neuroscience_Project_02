@@ -20,6 +20,8 @@ function [vocoded_x, cf_rand] = vocoder(x, Fs, n_channels, channel_spacing, cuto
 % Code written by Vahid Montazeri, October 2018.
 % Code editted by Jip de Kok, June 2020.
 
+% Start timer
+tic
 
 % If not all inputs are defined then set missing inputs to their defaults.
 switch nargin
@@ -177,4 +179,7 @@ for iter = 1:iterations
 end
     % Scale output waveform to have same rms as original
     vocoded_x = vocoded_x * (rms(x)/rms(vocoded_x));
+    
+    % Stop timer
+    toc
 end

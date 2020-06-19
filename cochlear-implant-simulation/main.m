@@ -18,7 +18,7 @@ y4 = vocoder(x, FS, 4, 'default', 240, 'NOISE', 1);
 y8 = vocoder(x, FS, 8, 'default', 240, 'NOISE', 1);
 y10 = vocoder(x, FS, 10, '10-electrodes', 240, 'NOISE', 1);
 y16 = vocoder(x, FS, 16, '16-electrodes', 240, 'NOISE', 1);
-[y, config] = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 0, 1, 20);
+[y, config] = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 0, 1, 100);
 
 % Plot the new audio signal
 figure;
