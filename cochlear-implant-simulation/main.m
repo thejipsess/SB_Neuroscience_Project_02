@@ -24,16 +24,16 @@ if strcmp(Userinput,'n')
         [filepath,name,ext] = fileparts(file);
 
         % Load  the audio file
-        [x,fs] = audioread(['Audio/in/',name,ext]);
+        [sound,fs] = audioread(['Audio/in/',name,ext]);
     
         % Resample the audio
         x = resample(x, FS, fs);
 
         % Convert audio to the cochlear implant signal
-        y = vocoder(x, FS, 22, 50, 'NOISE', 1);
+        %y = vocoder(x, FS, 22, 50, 'NOISE', 1);
         
         % New implementation of the vocoder
-        %[y, config] = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 0, 1, 100);
+        [y, config] = vocoder(sound, FS, 22, '22-electrodes', 240, 'NOISE', 0, 1, 100);
 
 
         % play sound commented out
@@ -59,6 +59,9 @@ if strcmp(Userinput,'n')
     
     
 elseif strcmp(Userinput,'y')
+    % Set settings
+    FS = 16e3;
+        
     % load in the work space
     load('Audio/matin/Stim288.mat')
 
@@ -70,10 +73,13 @@ elseif strcmp(Userinput,'y')
     for i=1:numfiles
         %selecting sounds
         soundnumber= i;
-        sound = stim(soundnumber,:),fs;
+        sound = stim(soundnumber,:);
     
         % Convert audio to the cochlear implant signal
-        y = vocoder(sound, fs, 22, 50, 'NOISE', 0);
+        %y = vocoder(sound, fs, 22, 50, 'NOISE', 0);
+        
+        % New implementation of the vocoder
+        [y, config] = vocoder(sound, FS, 22, '22-electrodes', 240, 'NOISE', 0, 1, 5);
     
         % Plot the new audio signal commented out
         % figure;
@@ -97,7 +103,7 @@ elseif strcmp(Userinput,'y')
         count = i
     end
     
-    save('Stim_CI','fs','stim_CI','labels','stim')
+    %save('Stim_CI','fs','stim_CI','labels','stim')
     
 else 
     disp("error wrong input")    
