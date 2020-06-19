@@ -87,6 +87,7 @@ Wn = space_channels(n_channels, Fs, channel_spacing);
 
 if optimise
     verbose = 0;
+
 end
 
 % Randomise channel placement for optimisation
