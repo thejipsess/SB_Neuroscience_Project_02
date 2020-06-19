@@ -31,6 +31,9 @@ if strcmp(Userinput,'n')
 
         % Convert audio to the cochlear implant signal
         y = vocoder(x, FS, 22, 50, 'NOISE', 1);
+        
+        % New implementation of the vocoder
+        %[y, config] = vocoder(x, FS, 22, '22-electrodes', 240, 'NOISE', 0, 1, 100);
 
 
         % play sound commented out
@@ -99,3 +102,4 @@ elseif strcmp(Userinput,'y')
 else 
     disp("error wrong input")    
 end
+
