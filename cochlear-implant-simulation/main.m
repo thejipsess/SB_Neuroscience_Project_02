@@ -66,11 +66,11 @@ elseif strcmp(Userinput,'y')
     
     for i=1:numfiles
         %selecting sounds
-        soundnumber= i
-        sound = stim(soundnumber,:),fs
+        soundnumber= i;
+        sound = stim(soundnumber,:),fs;
     
         % Convert audio to the cochlear implant signal
-        y = vocoder(sound, fs, 22, 50, 'NOISE', 1);
+        y = vocoder(sound, fs, 22, 50, 'NOISE', 0);
     
         % Plot the new audio signal commented out
         % figure;
@@ -94,7 +94,7 @@ elseif strcmp(Userinput,'y')
         count = i
     end
     
-    save('Stim_CI','fs','stim_CI','labels')
+    save('Stim_CI','fs','stim_CI','labels','stim')
     
 else 
     disp("error wrong input")    
