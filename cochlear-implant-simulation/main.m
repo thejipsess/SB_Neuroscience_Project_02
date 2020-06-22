@@ -70,7 +70,7 @@ elseif strcmp(Userinput,'y')
     FS = 16e3;
 
     % New implementation of the vocoder
-    [stim_CI, config] = vocoder(audio, FS, 8, 'default', 240, 'NOISE', 0, optimise, iterations);
+    [stim_CI, config] = vocoder(audio, FS, 22, '22-electrodes', 240, 'NOISE', 0, optimise, iterations);
 
     % writing out the audio
 
@@ -78,7 +78,7 @@ elseif strcmp(Userinput,'y')
     % chr = mat2str(i);
     % audiowrite(['Audio/matout/',name,chr,'.wav'], y2, fs)
 
-    save('Audio/out/stim_CI_8Channels','fs','stim_CI','labels')
+    save('Audio/out/stim_CI_22Channels','fs','stim_CI','labels')
     
 else 
     disp("error wrong input")    
