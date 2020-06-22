@@ -12,8 +12,8 @@ cf_rand = repmat(cf, 1, iterations);
 index = 3;
 for i = 2:iterations
     for j = 2:length(cf)-1
-        min = cf(j-1);
-        max = cf(j+1);
+        min = cf_rand(j-1, i);
+        max = cf_rand(j+1, i);
         cf_rand(j, i) = min + rand(1) * (max - min);
     end
     
