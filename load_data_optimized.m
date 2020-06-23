@@ -1,4 +1,4 @@
-function [features_temporal, features_spectral, labels] = load_data_optimized(filename_in, filename_out, start, finish)
+function [features_temporal, features_spectral, labels] = load_data_optimized(filename_in, filename_out, start, finish, FS)
 %load('Stim288.mat');
 load(filename_in);
 
@@ -6,6 +6,7 @@ range = start:finish;
 channels = 98;
 T = 16001;
 stim = stim_CI{1,1}';
+fs=FS;
 
 features_temporal = zeros(length(range), T, 4); %4 since we want to store EE1 to EE4
 features_spectral = zeros(length(range), channels, 4);
