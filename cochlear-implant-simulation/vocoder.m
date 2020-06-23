@@ -126,7 +126,7 @@ for as = 1:size(x, 2)
             Wn = Wn_rand(:,index:index+1);
         end
         % GeneFs lowpass filter coefficients (for envelope extraction):
-         fc=cutoff /(Fs/2);
+         fc = cutoff /(Fs/2);
          % The butter-worth filter create a frequency response as flat as possible
          % in the pass band region. 
         [blp,alp]=butter(2,fc,'low'); % geneFs filter coefficients
