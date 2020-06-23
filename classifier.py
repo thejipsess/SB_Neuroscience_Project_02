@@ -22,11 +22,11 @@ def prepare_labels(start, end, labels):
     labels = le.fit_transform(labels)
     return labels
 
-def classifier_SVM(features, labels):
+def classifier_SVM(features, labels, stratify):
     features = np.asarray(features)
     labels = np.asarray(labels)
     print(features.shape)
-    X_train, X_test, y_train, y_test = train_test_split(features, labels, stratify=labels)
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, stratify=stratify)
     SVM = SVC()
     SVM.fit(X_train, y_train)
     pred = SVM.predict(X_test)
@@ -34,21 +34,45 @@ def classifier_SVM(features, labels):
     conf_mat = confusion_matrix(y_test, pred)
     print(conf_mat, score)
 
-def SVM_cross_val(features, labels, kernel):
+def SVM_cross_val(features, labels, kernel, stratify):
     features = np.asarray(features)
     labels = np.asarray(labels)
     SVM = SVC(kernel=kernel)
     RSKF = RepeatedStratifiedKFold(n_splits=5, n_repeats=20)
-    scores = cross_val_score(SVM, features, labels, cv=RSKF)
+    scores = cross_val_score(SVM, features, labels, cv=RSKF, groups=stratify)
     #print(scores.mean(), scores.std())
     return scores
 
+def make_conf_mat_SVM(features, labels, stratify):
+    features = np.asarray(features)
+    labels = np.asarray(labels)
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, stratify=stratify)
+    SVM = SVC()
+    SVM.fit(X_train, y_train)
+    pred = SVM.predict(X_test)
+    score = accuracy_score(y_test, pred)
+    conf_mat = confusion_matrix(y_test, pred)
+    return conf_mat, score
 
-def RF_cross_val(features, labels):
+
+def RF_cross_val(features, labels, stratify):
+    features = np.asarray(features)
+    labels = np.asarray(labels)
     RF = RandomForestClassifier(n_estimators=500)
     RSKF = RepeatedStratifiedKFold(n_splits=5, n_repeats=20)
-    scores = cross_val_score(RF, features, labels, cv=RSKF)
+    scores = cross_val_score(RF, features, labels, cv=RSKF, groups=stratify)
     return scores
+
+def make_conf_mat_RF(features, labels, stratify):
+    features = np.asarray(features)
+    labels = np.asarray(labels)
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, stratify=stratify)
+    RF = RandomForestClassifier(n_estimators=500)
+    RF.fit(X_train, y_train)
+    pred = RF.predict(X_test)
+    score = accuracy_score(y_test, pred)
+    conf_mat = confusion_matrix(y_test, pred)
+    return conf_mat, score
 
 #if __name__ == '__main__':
 #    path = '/home/esther/Documents/MATLAB/project2/'

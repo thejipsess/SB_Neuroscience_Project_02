@@ -19,13 +19,12 @@ save(feature_file, 'freq_over_mfr_EE1', 'freq_over_mfr_EE2', 'freq_over_mfr_EE3'
 %and only stores the extracted features.
 
 features_file = 'test_classifier.mat';
+filename_in = 'stim_CI_22Channels.mat';
 start = 0;
-finish = 96;
+finish = 6;
 
 %this function uses matlab code, so index starts at 1
-[~, features_spectral, labels] = load_data_optimized(features_file, start+1, finish);
-load(features_file, 'features_spectral');
-load('Stim288.mat')
+[~, features_spectral, labels] = load_data_optimized(filename_in, features_file, start+1, finish);
 
 %Here python code is runned
 %Check if python is installed and change the location if needed
@@ -33,8 +32,22 @@ load('Stim288.mat')
 py.sys.setdlopenflags(int32(10));
 py.importlib.import_module('ssl');
 
-scores = classifier(features_spectral,labels, start, finish, 'rbf');
+[scores, ~, ~] = classifier(features_spectral, labels, start, finish, 'rbf', labels(start+1:finish));
+boxplot(scores);
 
 %% To load wav files
 
-%[y, Fs] = audioread('0_jackson_0.wav')
+filename_out = 'x_numeric_data.mat';
+features = [];
+labels = [];
+groups = [];
+for x = 0:9
+    [features_new, labels_new] = load_data_optimized_from_folder(filename, x);
+    features = [features;features_new];
+    labels = [labels, labels_new];
+    persons = repelem([10,20,30,40], 50) + x;
+    groups = [groups, persons];
+end
+
+[scores, conf_mat, score] = classifier(features, labels, 0, size(labels,2), 'rbf', groups);
+heatmap(conf_mat)
