@@ -153,7 +153,7 @@ for as = 1:size(x, 2)
             % Show butterworth filter design
             if verbose
                 figure
-                freqz(blp, alp)
+                freqz(b, a)
             end
 
             if(verbose)
@@ -193,7 +193,8 @@ for as = 1:size(x, 2)
                 if length(noise) > length(envelope)
                     noise(length(envelope)+1:length(noise))=[];
                 end
-
+                
+                % Normalise noise signal
                 source = noise./(max(abs(noise)));
                 fn=filtfilt(b,a,envelope.*source);
 
