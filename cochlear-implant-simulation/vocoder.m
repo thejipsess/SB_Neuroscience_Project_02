@@ -1,4 +1,4 @@
-function [CI_signals, cf_rand] = vocoder(x, Fs, n_channels, channel_spacing, cutoff, vocoder_type, verbose, optimise, iterations)
+function [CI_signals, cf_rand, labels] = vocoder(x, Fs, n_channels, channel_spacing, cutoff, vocoder_type, verbose, optimise, iterations)
 % Implementation of cochlear implant simulation, referred to as vocoder.
 % The first argument is the signal.
 % The second argument is the sampling Fs (preferred 16Khz)
@@ -34,6 +34,8 @@ if ischar(x)
         disp('loaded .mat file succesfully')
         % Still need to incorporate and else statement to handle individual
         % files or folders filled with audio files.
+    else
+        labels = 'no .mat was loaded';
     end
 end
 
@@ -128,7 +130,12 @@ for as = 1:size(x, 2)
          % The butter-worth filter create a frequency response as flat as possible
          % in the pass band region. 
         [blp,alp]=butter(2,fc,'low'); % geneFs filter coefficients
-
+        
+        % Show butterworth filter design
+        if verbose
+            freqz(blp, alp)
+        end
+        
         % GeneFs noise carrier only for noise vocoders
         if( strcmp(vocoder_type, 'NOISE') )
             noise = rand( length(x(:, as)),1 );
@@ -140,8 +147,14 @@ for as = 1:size(x, 2)
 
         for i=1:n_channels
 
-            %     Find the filter coefficients for each bandpass filter
+            % Find the filter coefficients for each bandpass filter
             [b,a] = butter(4,Wn(i,:));
+            
+            % Show butterworth filter design
+            if verbose
+                figure
+                freqz(blp, alp)
+            end
 
             if(verbose)
                 [h,f]=freqz(b,a,1024,Fs);        
@@ -185,13 +198,13 @@ for as = 1:size(x, 2)
                 fn=filtfilt(b,a,envelope.*source);
 
             else
-                %     If tone vocoder is selected, then multiply the envelope with a
-                %     tone carrier.
+                %    If tone vocoder is selected, then multiply the envelope with a
+                %    tone carrier.
                 %    Basically, we modulate the tone by the envelope
 
                 %     Tone with freq. at the center of the band-pass filter
                 f = exp(mean(log(Wn(i,:)))) * (Fs/2);
-                tone=sin(2*pi*(1:length(envelope))*f/Fs)';
+                tone = sin(2*pi*(1:length(envelope))*f/Fs)';
                 tone = tone(:);
                 fn = envelope.*tone;
             end
