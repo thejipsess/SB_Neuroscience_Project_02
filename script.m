@@ -18,12 +18,13 @@ save(feature_file, 'freq_over_mfr_EE1', 'freq_over_mfr_EE2', 'freq_over_mfr_EE3'
 %This version does not load all the data but loads the data per sound clip
 %and only stores the extracted features.
 
-features_file = 'test_classifier.mat';
+features_file = 'test_classifier4.mat';
+input_filename = 'stim_CI_4Channels.mat';
 start = 0;
-finish = 96;
+finish = 3; %96
 
 %this function uses matlab code, so index starts at 1
-[~, features_spectral, labels] = load_data_optimized(features_file, start+1, finish);
+[~, features_spectral, labels] = load_data_optimized(input_filename, features_file, start+1, finish);
 load(features_file, 'features_spectral');
 load('stim_CI_4Channels.mat')
 
