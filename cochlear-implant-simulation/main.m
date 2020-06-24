@@ -1,9 +1,9 @@
 clear; close all; clc; 
 
 % Set the general settings:
-audio = 'Audio/matin/Stim288.mat';
-optimise = 0;
-iterations = 1;
+audio = 'Audio/in/Stim288.mat';
+optimise = 1;
+iterations = 3;
 FS = 16e3;
 
 % New implementation of the vocoder

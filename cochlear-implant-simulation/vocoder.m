@@ -29,13 +29,75 @@ if ischar(x)
         % Load the .mat file
         load(x)
         
-        x = transpose(stim);
+        % Transpose the audio matrix
+        audio = transpose(stim);
+        
+        % Initialise cell array x
+        x = cell(1);
+        
+        % Convert audio to a cell array
+        for i = 1:size(audio, 2)
+            x{i} = audio(:,i);
+        end
         
         disp('loaded .mat file succesfully')
         % Still need to incorporate and else statement to handle individual
         % files or folders filled with audio files.
+    elseif isfolder(x)
+        % Load all audio files from folder
+        folder = x;
+        if folder(end) ~= '/'
+            folder = [folder, '/'];
+        end
+        
+        % Set supported files types
+        filetypes = {'.mp3', '.wav', '.flac'};
+        
+        % Count number files in folder
+        files = dir(folder);
+        numfiles = length(files);
+        
+        % Count number of supported files in folder
+        numfiles_sup = length(dir(strcat(folder, '*.mp3')));
+        numfiles_sup = numfiles_sup + length(dir(strcat(folder, '*.wav')));
+        numfiles_sup = numfiles_sup + length(dir(strcat(folder, '*.flac')));
+        
+        % Initliase x to store all audio files
+        x = cell(1);
+        
+        index = 1;
+        for i=1:numfiles
+
+            % Set settings
+            FS = 16e3;
+            % filetype = '.mp3';
+            % filename = 'beethoven_fur_elise_orig';
+
+            % getting file name withouth extentsion
+            file = files(i,1);
+            file = file.name;
+            [filepath,name,ext] = fileparts(file);
+            
+            % Check if the filetype is supported
+            if ismember(ext, filetypes)
+                % Load  the audio file
+                [audio,fs] = audioread([folder,name,ext]);
+
+                % Resample the audio
+                audio = resample(audio, FS, fs);
+                
+                % Ensure the audio is mono
+                audio = mean(audio, 2);
+                
+                % Store the audio in 
+                x{index} = audio;
+                index = index + 1;
+            end
+        end
+        disp(strcat("Loaded ", num2str(numfiles_sup), ' files.'))
+        labels = 'no labels available';
     else
-        labels = 'no .mat was loaded';
+        labels = 'no audio could be loaded';
     end
 end
 
@@ -82,7 +144,7 @@ switch nargin
         end
 end
 
-npts=length(x);
+
 
 % Center Freq. based on number of channels. These values are taken from
 % Dorman, Loizou, Rainey, (1997). Speech intelligibility as a function of the number of channels
@@ -112,33 +174,33 @@ for arch = 1:iterations
 end
 
 % Loop though all audio segments in x (as = Audio Segment)
-for as = 1:size(x, 2)
-    % Initialise y, which will contain all processed CI audio signals
-    y = NaN(length(x(:, as)), iterations);
+for as = 1:length(x)
+    % Check length of audio signal
+    npts = length(x{as});
+    
+    % Initialise y, which will contain the processed CI audio signal for
+    % all channel stetups
+    y = NaN(length(x{as}), iterations);
 
     % Apply high-pass pre-emphasis filter
     pre=0.9378;
-    xx=filter([1 -pre], 1, x(:, as))';
+    xx=filter([1 -pre], 1, x{as})';
 
     index = 1;
     for iter = 1:iterations
         if optimise
+            % Select current channel setup
             Wn = Wn_rand(:,index:index+1);
         end
-        % GeneFs lowpass filter coefficients (for envelope extraction):
-         fc = cutoff /(Fs/2);
-         % The butter-worth filter create a frequency response as flat as possible
-         % in the pass band region. 
-        [blp,alp]=butter(2,fc,'low'); % geneFs filter coefficients
         
-        % Show butterworth filter design
-        if verbose
-            freqz(blp, alp)
-        end
+%         % Show butterworth filter design
+%         if verbose
+%             freqz(blp, alp)
+%         end
         
-        % GeneFs noise carrier only for noise vocoders
+        % Generate noise carrier (only for noise vocoders)
         if( strcmp(vocoder_type, 'NOISE') )
-            noise = rand( length(x(:, as)),1 );
+            noise = rand( length(x{as}),1 );
             noise = noise(:);
         end
 
@@ -156,29 +218,20 @@ for as = 1:size(x, 2)
                 freqz(b, a)
             end
 
-            if(verbose)
-                [h,f]=freqz(b,a,1024,Fs);        
-                figure(1);
-                plot(f,20*log10(abs(h+eps)),'LineWidth',2);
-                hold on;
-                min_f = min(Wn(:,1))*Fs/2 - 50;
-                axis([min_f Fs/2 -6 0.5]);
-                x_ticks = round(logspace(log10(min_f), log10(Fs/2), n_channels));
-                set(gca,'XScale','log', 'XTick', x_ticks);                  
-                xlabel('Frequency (Hz)');
-                ylabel('Filter gain (dB)');
-                title('Band-pass filters transfer function');
-                grid on;
-            end
-
             % now filter the input waveform using filter #i
             filtwav = filtfilt(b,a,xx)';
 
-            %     Half-wave rectification
+            % Half-wave rectification
             filtwav(filtwav<0) = 0;
+            
+            % GeneFs lowpass filter coefficients (for envelope extraction):
+            fc = cutoff /(Fs/2);
+            % The butter-worth filter create a frequency response as flat as possible
+            % in the pass band region. 
+            [blp,alp]=butter(2,fc,'low'); % geneFs filter coefficients
 
-            %     Filter the band-passed filtered signal to extract its envelope
-            %     (Overall shape)
+            % Filter the band-pass filtered signal to extract its envelope
+            % (Overall shape)
             envelope=filter(blp,alp,filtwav);
             envelope = envelope(:);
 
@@ -212,24 +265,39 @@ for as = 1:size(x, 2)
 
             % sum bands with equal gain in each channel
             vocoded_x = vocoded_x + fn;
+            
+            if(verbose)
+                [h,f]=freqz(b,a,1024,Fs);        
+                figure(1);
+                plot(f,20*log10(abs(h+eps)),'LineWidth',2);
+                hold on;
+                min_f = min(Wn(:,1))*Fs/2 - 50;
+                axis([min_f Fs/2 -6 0.5]);
+                x_ticks = round(logspace(log10(min_f), log10(Fs/2), n_channels));
+                set(gca,'XScale','log', 'XTick', x_ticks);                  
+                xlabel('Frequency (Hz)');
+                ylabel('Filter gain (dB)');
+                title('Band-pass filters transfer function');
+                grid on;
+            end
 
         end
         y(:, iter) = vocoded_x;
         index = index + 2;
     end
         
-        for i = 1:size(y, 2)
-            % Scale output waveform to have same rms as original
-            y(:,i) = y(:,i) * (rms(x(:, as))/rms(y(:,i)));
-            
-            % Normalise the sound signal such that it does not surpass the
-            % extreme valuse of the input sound. This ensure that the
-            % loudness of both signals is comparable.
-            y(:,i) = normalize(y(:,i), 'range', [min(x(:, as)) max(x(:, as))]);
-            
-            % Store the vocoded audio signal in the CI_signals variable
-            CI_signals{i,1}(:,as) = y(:,i);
-        end
+    for i = 1:size(y, 2)
+        % Scale output waveform to have same rms as original
+        y(:,i) = y(:,i) * (rms(x{as})/rms(y(:,i)));
+
+        % Normalise the sound signal such that it does not surpass the
+        % extreme valuse of the input sound. This ensure that the
+        % loudness of both signals is comparable.
+        y(:,i) = normalize(y(:,i), 'range', [min(x{as}) max(x{as})]);
+        
+        % Store the vocoded audio signal in the CI_signals variable
+        CI_signals{i,1}{1, as} = y(:,1);
+    end
 end
 
 % Stop timer
