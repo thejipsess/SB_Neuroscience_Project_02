@@ -38,7 +38,7 @@ def SVM_cross_val(features, labels, kernel, stratify):
     features = np.asarray(features)
     labels = np.asarray(labels)
     SVM = SVC(kernel=kernel)
-    RSKF = RepeatedStratifiedKFold(n_splits=5, n_repeats=20)
+    RSKF = RepeatedStratifiedKFold(n_splits=4, n_repeats=50)
     scores = cross_val_score(SVM, features, labels, cv=RSKF, groups=stratify)
     #print(scores.mean(), scores.std())
     return scores
@@ -58,8 +58,8 @@ def make_conf_mat_SVM(features, labels, stratify):
 def RF_cross_val(features, labels, stratify):
     features = np.asarray(features)
     labels = np.asarray(labels)
-    RF = RandomForestClassifier(n_estimators=500)
-    RSKF = RepeatedStratifiedKFold(n_splits=5, n_repeats=20)
+    RF = RandomForestClassifier(n_estimators=500, n_jobs=-1)
+    RSKF = RepeatedStratifiedKFold(n_splits=5, n_repeats=50)
     scores = cross_val_score(RF, features, labels, cv=RSKF, groups=stratify)
     return scores
 
