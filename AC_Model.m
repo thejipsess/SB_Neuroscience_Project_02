@@ -18,8 +18,8 @@
 
 % Author: Isma Zulfiqar
 
-close all; clear; clc; tic
-disp(['Modeling spectro-temporal processing in 2 core (A1,R) and 2 belt (Slow, Fast) areas of the AC:' newline])
+%close all; clear; clc; tic
+%disp(['Modeling spectro-temporal processing in 2 core (A1,R) and 2 belt (Slow, Fast) areas of the AC:' newline])
 
 %% Initializing Frequency axis
 
@@ -28,33 +28,33 @@ lim1_frqaxis = 50;
 lim2_frqaxis = 8000;
 F = MakeErbCFs(lim1_frqaxis,lim2_frqaxis,Size);  % ERB frequency axis
 
-disp(['Model spans ' num2str(lim1_frqaxis) ' Hz to ' num2str(lim2_frqaxis) ' Hz on tonotopic axis...'])
+%disp(['Model spans ' num2str(lim1_frqaxis) ' Hz to ' num2str(lim2_frqaxis) ' Hz on tonotopic axis...'])
 
 %% Generating input sound 
-duration = 1; % second
-Fs = 16000;
-mod_rate = 6; % Hz
-mod_depth = 1; % from 0 to 1
-carrier_freq = 1000; % Hz
+Fs = fs;
+duration = size(s,1)/Fs; % second
+% Fs = 16000;
+% mod_rate = 6; % Hz
+% mod_depth = 1; % from 0 to 1
+%carrier_freq = 1000; % Hz
 
-disp(['Input signal is ' num2str(carrier_freq) ' Hz tone, amplitude modulated at ' num2str(mod_rate) ' Hz...'])
-
+%disp(['Input signal is ' num2str(carrier_freq) ' Hz tone, amplitude modulated at ' num2str(mod_rate) ' Hz...'])
 t = [0:(duration*Fs)-1]'/Fs;
-s = (1+(mod_depth*sin(2*pi*mod_rate*t -pi/2))) .* sin(2*pi*carrier_freq*t);
-figure(1); plot(t,s); xlabel('Time'); ylabel('Amplitude'); title('Sound waveform');
+%s = (1+(mod_depth*sin(2*pi*mod_rate*t -pi/2))) .* sin(2*pi*carrier_freq*t);
+%figure(1); plot(t,s); xlabel('Time'); ylabel('Amplitude'); title('Sound waveform');
 
 % =============================================================================================
 % Peripheral Processing Stage
 % =============================================================================================
   
 %% Applying gammatone filterbank
-disp('Passing the sound through gammatone filterbank ... ')
+%disp('Passing the sound through gammatone filterbank ... ')
 
 bm_upsampled = gammatoneFast(s,F,Fs); 
-color='k'; figureSpec(1:length(bm_upsampled),F,squeeze(bm_upsampled'),2,'Gammatone filter output',color);
+%color='k'; figureSpec(1:length(bm_upsampled),F,squeeze(bm_upsampled'),2,'Gammatone filter output',color);
 
 %% Lateral Inhibitory Network
-disp('Running tonotopic derivative and half-wave rectification ...')
+%disp('Running tonotopic derivative and half-wave rectification ...')
 
 y2_h = bm_upsampled(:,Size);
 y3_h = 0; y4 = []; y5 =[]; v5 = [];
@@ -79,7 +79,7 @@ for ch = Size-1:-1:1
 end
 F_new = F(2:Size-1);
 bm = y4(:,2:Size-1);
-color='k'; figureSpec(1:64:length(bm_upsampled),F_new,squeeze(v5(:,2:end)'),3,'Temporally integrated Spectrogram (LIN output)',color);
+%color='k'; figureSpec(1:64:length(bm_upsampled),F_new,squeeze(v5(:,2:end)'),3,'Temporally integrated Spectrogram (LIN output)',color);
 
 % converting LIN output to high reslution model input
 Last = floor(1000 * (length(s)/Fs));  %last time in computation in ms
@@ -93,14 +93,20 @@ bm = 1E3*bm;
 
 Stim = bm';
 
-[~,channel] = min(abs(F-carrier_freq)); % computing channel with CF closes to carrier freq
+%color='k'; figureload(aduioSpec(1:64:length(bm_upsampled),F_new,squeeze(v5(:,2:end)'),3,'Temporally integrated Spectrogram (LIN output)',color);
+
+% High res cochleagram:
+% color='k'; figureSpec(1:1:length(bm_upsampled),F_new,squeeze(Stim(:,2:end)),3,'Temporally integrated Spectrogram (LIN output)',color);
+
+
+%[~,channel] = min(abs(F-carrier_freq)); % computing channel with CF closes to carrier freq
     
 % =============================================================================================
 % Cortical Processing Stage
 % =============================================================================================
     
 %% inizialize the network and define the inputs
-disp('Initializing network...')
+%disp('Initializing network...')
 
 EE1 = zeros(Size-2, length(time)); IN1 = EE1; EEresp1 = EE1; INresp1 = EE1;
 EE2 = zeros(Size-2, length(time)); IN2 = EE2; EEresp2 = EE2; INresp2 = EE2;
@@ -109,14 +115,14 @@ EE4 = zeros(Size-2, length(time)); IN4 = EE4; EEresp4 = EE4; INresp4 = EE4;
 input1 = zeros(1,length(time)); input2 = EE1; input3 = EE1;
 
 %% Stimulus
-disp('Initial input is only for excitatory units, inhibitory input is set to zero...')
+%disp('Initial input is only for excitatory units, inhibitory input is set to zero...')
 
 P = Stim(:,1:length(time));  % input to excitatory network
-color='k'; figureSpec(timei,F_new,Stim,4,'Model Input', color); 
+%color='k'; figureSpec(timei,F_new,Stim,4,'Model Input', color); 
 Q=zeros(Size-2,length(time));  % input to the IN population is set to zero
 
 %% Model Parameters
-disp('Setting model parameters and checking for stability...')
+%disp('Setting model parameters and checking for stability...')
 
 Xsyn1 = 20*(-5:5); % filter width
 Xsyn2 = 20*(-5:5);
@@ -164,28 +170,32 @@ sigmaEE1 = 40;
 sigmaEI1 = 160; 
 sigmaIE1 = sigmaEI1;
 sigmaII1 = 10; 
-disp('For A1:'); checkSigmas(sigmaEE1, sigmaEI1, sigmaIE1, sigmaII1, thExc1, thIn1, EEgain, EIgain, IEgain, IIgain , max1);
+%disp('For A1:'); 
+checkSigmas(sigmaEE1, sigmaEI1, sigmaIE1, sigmaII1, thExc1, thIn1, EEgain, EIgain, IEgain, IIgain , max1);
 
 % R
 sigmaEE2 = 40;
 sigmaEI2 = 160;
 sigmaIE2 = sigmaEI2;
 sigmaII2 = 10;
-disp('For R:'); checkSigmas(sigmaEE2, sigmaEI2, sigmaIE2, sigmaII2, thExc2, thIn2, EEgain, EIgain, IEgain, IIgain , max2);
+%disp('For R:'); 
+checkSigmas(sigmaEE2, sigmaEI2, sigmaIE2, sigmaII2, thExc2, thIn2, EEgain, EIgain, IEgain, IIgain , max2);
 
 % Slow
 sigmaEE3 = 20;
 sigmaEI3 = 80;
 sigmaIE3 = sigmaEI3;
 sigmaII3 = 10;
-disp('For Slow:'); checkSigmas(sigmaEE3, sigmaEI3, sigmaIE3, sigmaII3, thExc3, thIn3, EEgain, EIgain, IEgain, IIgain , max3);
+%disp('For Slow:'); 
+checkSigmas(sigmaEE3, sigmaEI3, sigmaIE3, sigmaII3, thExc3, thIn3, EEgain, EIgain, IEgain, IIgain , max3);
 
 % Fast
 sigmaEE4 = 200;
 sigmaEI4 = 300;
 sigmaIE4 = sigmaEI4;
 sigmaII4 = 30; 
-disp('For Fast:'); checkSigmas(sigmaEE4, sigmaEI4, sigmaIE4, sigmaII4, thExc4, thIn4, EEgain, EIgain, IEgain, IIgain , max4);
+%disp('For Fast:'); 
+checkSigmas(sigmaEE4, sigmaEI4, sigmaIE4, sigmaII4, thExc4, thIn4, EEgain, EIgain, IEgain, IIgain , max4);
 
 
 % synaptic weights
@@ -207,7 +217,7 @@ synII4 = IIgain*exp(-abs(Xsyn4)./sigmaII4);
 
 %% Simulating response
 
-disp('Simulating responses... ');
+%disp('Simulating responses... ');
 %% AI 
 smoothing_kernel = [0.5 1 0.5]; % weight of connections from input to single unit
 for T = 2:length(time)  %Loop in ms, Euler solution method
@@ -223,16 +233,16 @@ for T = 2:length(time)  %Loop in ms, Euler solution method
     IN1(:,T) = IN1(:,T-1) + (DelT/DT1)*(-IN1(:,T-1) + (max1)*INresp1(:,T)./(thIn1^2 + INresp1(:,T)));
 end
 
-color='b'; figureSpec(timei,F_new,squeeze(EE1),5,'A1 - Excitatory Response',color);
-color='r'; figureSpec(timei,F_new,squeeze(IN1),6,'A1 - Inhibitory Response',color);
+%color='b'; figureSpec(timei,F_new,squeeze(EE1),5,'A1 - Excitatory Response',color);
+%color='r'; figureSpec(timei,F_new,squeeze(IN1),6,'A1 - Inhibitory Response',color);
 
-fft_EE1 = abs(fft(squeeze(EE1(channel,:))));
-[maxValue,indexMax] = max(fft_EE1(2:ceil(length(fft_EE1)/2))); 
-osc_EE1 =  ceil((indexMax) * (FS / length(fft_EE1)));% strongest oscialltion in the signal
-vs_EE1 = maxValue/fft_EE1(1); % Vector Strength of strongest oscillation
-fr_EE1 = fft_EE1(1);
-disp(['  For A1, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE1) ' Hz, ' ...
-    'with Vector Strength = ' num2str(vs_EE1)]);
+% fft_EE1 = abs(fft(squeeze(EE1(channel,:))));
+% [maxValue,indexMax] = max(fft_EE1(2:ceil(length(fft_EE1)/2))); 
+% osc_EE1 =  ceil((indexMax) * (FS / length(fft_EE1)));% strongest oscialltion in the signal
+% vs_EE1 = maxValue/fft_EE1(1); % Vector Strength of strongest oscillation
+% fr_EE1 = fft_EE1(1);
+% disp(['  For A1, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE1) ' Hz, ' ...
+%     'with Vector Strength = ' num2str(vs_EE1)]);
 
 
 
@@ -250,17 +260,17 @@ for T = 2:length(time)  %Loop in ms, Euler solution method
     IN2(:,T) = IN2(:,T-1) + (DelT./DT2).*(-IN2(:,T-1) + (max2)*INresp2(:,T)./(thIn2^2 + INresp2(:,T)));
 end
 
-color='b'; figureSpec(timei,F_new,squeeze(EE2),7,'R - Excitatory Response',color);
-color='r'; figureSpec(timei,F_new,squeeze(IN2),8,'R - Inhibitory Response',color);
+%color='b'; figureSpec(timei,F_new,squeeze(EE2),7,'R - Excitatory Response',color);
+%color='r'; figureSpec(timei,F_new,squeeze(IN2),8,'R - Inhibitory Response',color);
 
-fft_EE2 = abs(fft(squeeze(EE2(channel,:))));
-[maxValue,indexMax] = max(fft_EE2(2:ceil(length(fft_EE2)/2))); 
-osc_EE2 =  ceil((indexMax) * (FS / length(fft_EE2)));% strongest oscialltion in the signal
-vs_EE2 = maxValue/fft_EE2(1); % Vector Strength of strongest oscillation
-fr_EE2 = fft_EE2(1);
-
-disp(['  For R, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE2) ' Hz, ' ...
-    'with Vector Strength = ' num2str(vs_EE2)]);
+% fft_EE2 = abs(fft(squeeze(EE2(channel,:))));
+% [maxValue,indexMax] = max(fft_EE2(2:ceil(length(fft_EE2)/2))); 
+% osc_EE2 =  ceil((indexMax) * (FS / length(fft_EE2)));% strongest oscialltion in the signal
+% vs_EE2 = maxValue/fft_EE2(1); % Vector Strength of strongest oscillation
+% fr_EE2 = fft_EE2(1);
+% 
+% disp(['  For R, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE2) ' Hz, ' ...
+%     'with Vector Strength = ' num2str(vs_EE2)]);
 
 %% Slow
 for T = 2:length(time)
@@ -275,16 +285,16 @@ for T = 2:length(time)
     IN3(:,T) = IN3(:,T-1) + (DelT./DT3).*(-IN3(:,T-1) + (max3)*INresp3(:,T)./(thIn3^2 + INresp3(:,T)));
 end
 
-color='b'; figureSpec(timei,F_new,squeeze(EE3),9,'Slow - Excitatory Response',color);
-color='r'; figureSpec(timei,F_new,squeeze(IN3),10,'Slow - Inhibitory Response',color);
+%color='b'; figureSpec(timei,F_new,squeeze(EE3),9,'Slow - Excitatory Response',color);
+%color='r'; figureSpec(timei,F_new,squeeze(IN3),10,'Slow - Inhibitory Response',color);
 
-fft_EE3 = abs(fft(squeeze(EE3(channel,:))));
-[maxValue,indexMax] = max(fft_EE3(2:ceil(length(fft_EE3)/2))); 
-osc_EE3 =  ceil((indexMax) * (FS / length(fft_EE3)));% strongest oscialltion in the signal
-vs_EE3 = maxValue/fft_EE3(1); % Vector Strength of strongest oscillation
-fr_EE3 = fft_EE3(1);
-disp(['  For Slow, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE3) ' Hz, ' ...
-    'with Vector Strength = ' num2str(vs_EE3)]);
+% fft_EE3 = abs(fft(squeeze(EE3(channel,:))));
+% [maxValue,indexMax] = max(fft_EE3(2:ceil(length(fft_EE3)/2))); 
+% osc_EE3 =  ceil((indexMax) * (FS / length(fft_EE3)));% strongest oscialltion in the signal
+% vs_EE3 = maxValue/fft_EE3(1); % Vector Strength of strongest oscillation
+% fr_EE3 = fft_EE3(1);
+% disp(['  For Slow, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE3) ' Hz, ' ...
+%     'with Vector Strength = ' num2str(vs_EE3)]);
 
 %% Fast
 smoothing_kernel = [0.25 0.5 0.5 1 1 1 0.5 0.5 0.25];% weight of connections from input to single unit
@@ -302,18 +312,18 @@ for T = 2:length(time)
     IN4(:,T) = IN4(:,T-1) + (DelT./DT4).*(-IN4(:,T-1) + (max4)*INresp4(:,T)./(thIn4^2 + INresp4(:,T)));   
 end
 
-color='b'; figureSpec(timei,F_new,squeeze(EE4),11,'Fast - Excitatory Response',color);
-color='r'; figureSpec(timei,F_new,squeeze(IN4),12,'Fast - Inhibitory Response',color);
+%color='b'; figureSpec(timei,F_new,squeeze(EE4),11,'Fast - Excitatory Response',color);
+%color='r'; figureSpec(timei,F_new,squeeze(IN4),12,'Fast - Inhibitory Response',color);
 
-fft_EE4 = abs(fft(squeeze(EE4(channel,:))));
-[maxValue,indexMax] = max(fft_EE4(2:ceil(length(fft_EE4)/2))); 
-osc_EE4 =  ceil((indexMax) * (FS / length(fft_EE4)));% strongest oscialltion in the signal
-vs_EE4 = maxValue/fft_EE4(1); % Vector Strength of strongest oscillation
-fr_EE4 = fft_EE4(1);
-disp(['  For Fast, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE4) ' Hz, ' ...
-    'with Vector Strength = ' num2str(vs_EE4)]);
-
-disp(['Finished! Time Elapsed = ' num2str(toc) ' sec']);
+% fft_EE4 = abs(fft(squeeze(EE4(channel,:))));
+% [maxValue,indexMax] = max(fft_EE4(2:ceil(length(fft_EE4)/2))); 
+% osc_EE4 =  ceil((indexMax) * (FS / length(fft_EE4)));% strongest oscialltion in the signal
+% vs_EE4 = maxValue/fft_EE4(1); % Vector Strength of strongest oscillation
+% fr_EE4 = fft_EE4(1);
+% disp(['  For Fast, strongest oscillation at unit' num2str(channel) ' is ' num2str(osc_EE4) ' Hz, ' ...
+%     'with Vector Strength = ' num2str(vs_EE4)]);
+% 
+% disp(['Finished! Time Elapsed = ' num2str(toc) ' sec']);
 
 %% Stability conditions for the model
 function checkSigmas(sigmaEE, sigmaEI, sigmaIE, sigmaII, thExc, thIn, EEgain, EIgain, IEgain, IIgain, n)
@@ -332,8 +342,8 @@ if ~((n *( (2 * EEgain * sigmaEE(i)) - (2 * IEgain * sigmaIE(i)))) < thExc && ..
 end
 
 end
-    disp('Condition for activity spread satisfied by sigma values.')
-    disp('Condition for stability of response satisfied by set parameters.')
+    %disp('Condition for activity spread satisfied by sigma values.')
+    %disp('Condition for stability of response satisfied by set parameters.')
 end
 
 %% Neural Convolution
