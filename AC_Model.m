@@ -93,6 +93,12 @@ bm = 1E3*bm;
 
 Stim = bm';
 
+%color='k'; figureload(aduioSpec(1:64:length(bm_upsampled),F_new,squeeze(v5(:,2:end)'),3,'Temporally integrated Spectrogram (LIN output)',color);
+
+% High res cochleagram:
+% color='k'; figureSpec(1:1:length(bm_upsampled),F_new,squeeze(Stim(:,2:end)),3,'Temporally integrated Spectrogram (LIN output)',color);
+
+
 %[~,channel] = min(abs(F-carrier_freq)); % computing channel with CF closes to carrier freq
     
 % =============================================================================================

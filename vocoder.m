@@ -250,6 +250,7 @@ for as = 1:length(x)
                 source = noise./(max(abs(noise)));
                 
                 % Amplitude modulate the noise carrier with the envelope
+                % and perform the bandpass filter
                 fn = filtfilt(b,a,envelope.*source);
 
             else
